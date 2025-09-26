@@ -1,16 +1,22 @@
 import {useState} from "react";
 import VoteCard from "./vote-card";
 import {noop} from "../utils/utils";
-
+import {useMutation, useQuery} from "convex/react";
+import {api} from "../convex/_generated/api";
+import {Vote} from "../model/vote";
 const values = ["☕", "1", "2", "3", "5", "8", "13", "?"];
 
 export default function PokerPlanning() {
     const [selected, setSelected] = useState<string | null>(null);
     const [revealed, setRevealed] = useState<boolean>(false);
-    const [votes] = useState<string[]>([]);
-    const selectCard = (value: string): void => {
+
+    const votes: Vote[] = useQuery(api.functions.votes.getVotes) ?? [];
+    const addVote = useMutation(api.functions.votes.addVote);
+
+    const selectCard = (selectedValue: string): void => {
         if (revealed) return;
-        setSelected(value);
+        setSelected(selectedValue);
+        void addVote({value: selectedValue})
     }
 
     const revealVotes = (): void => {
@@ -39,7 +45,7 @@ export default function PokerPlanning() {
 
             <div className={"flex flex-wrap gap-4 justify-center mt-8"}>
                 {values.map((value) => (
-                    <VoteCard value={value} isSelected={selected === value} onSelect={selectCard}/>))
+                    <VoteCard key={value} value={value} isSelected={selected === value} onSelect={selectCard}/>))
                 }
             </div>
 
@@ -49,10 +55,11 @@ export default function PokerPlanning() {
                 </div>
             )}
             {revealed && (votes?.length ? (
-                    votes.map(vote => (
-                        <VoteCard value={vote}
+                    votes.map((vote: Vote) => (
+                        <VoteCard value={vote.value}
                                   isSelected={false}
                                   onSelect={noop}
+                                  key={vote._id}
                         />
                     ))) : (<div className="mt-4 text-center">Aucun vote</div>)
             )
