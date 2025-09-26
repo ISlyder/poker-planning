@@ -13,7 +13,7 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
-import type * as functions_vote from "../functions/vote.js";
+import type * as functions_votes from "../functions/votes.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -24,7 +24,7 @@ import type * as functions_vote from "../functions/vote.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
-  "functions/vote": typeof functions_vote;
+  "functions/votes": typeof functions_votes;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,
