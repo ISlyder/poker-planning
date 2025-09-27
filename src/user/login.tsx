@@ -1,15 +1,42 @@
-import React, {FormEvent, useState} from "react";
+import React, {FormEvent, useEffect, useState} from "react";
+import {useNavigate, useSearchParams} from "react-router-dom";
+import {useMutation} from "convex/react";
+import {api} from "../convex/_generated/api";
+import {getUserNameFromLocalStorage, User} from "./user";
+import {Id} from "../convex/_generated/dataModel";
 
 export default function Login() {
-    const [name, setName] = useState<string | null>(null);
+    const [name, setName] = useState<string>(getUserNameFromLocalStorage() ?? "");
+    const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
+    const createUser = useMutation(api.functions.users.createUser);
+    const addUserToRoom = useMutation(api.functions.room_users.addUserToRoom);
 
-    const submitForm = (e: FormEvent<HTMLFormElement>) => {
-        if (!name || !name.trim().length) {
+    useEffect(() => {
+        const room = searchParams.get("room");
+        if (!room) {
+            console.error("No room specified in URL. Redirecting to home.");
+            navigate("/");
+        }
+    }, [searchParams, navigate]);
+
+    const submitForm = async (e: FormEvent<HTMLFormElement>) => {
+        if (!name || !name.trim().length) return;
+        e.preventDefault();
+        const roomId = searchParams.get("room");
+        if (!roomId) {
+            throw new Error("No room ID found in URL");
+        }
+        if (getUserNameFromLocalStorage() === name) {
+            navigate(`/room/${roomId}`);
             return;
         }
-        e.preventDefault();
-
-        };
+        const userId: string = await createUser({name});
+        const user: User = {_id: userId, name};
+        localStorage.setItem("user", JSON.stringify(user));
+        await addUserToRoom({roomId: roomId as Id<"rooms">, userId: userId as Id<"users">});
+        navigate(`/room/${roomId}`);
+    };
 
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
         setName(e.target.value);
@@ -25,6 +52,7 @@ export default function Login() {
                     <label>Entrez votre nom</label>
                     <input type="text"
                            placeholder={"Nom"}
+                           value={name}
                            className={"border border-primary-300 p-2 rounded"}
                            onChange={handleNameChange}/>
                     <button type={"submit"} className={"bg-primary text-white p-2 rounded"}>Rejoindre</button>

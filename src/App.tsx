@@ -6,6 +6,7 @@ import NotFoundPage from "./ui/NotFoundPage";
 import Login from "./user/login";
 import {Link} from "react-router";
 import {BrowserRouter, Route, Routes} from "react-router-dom";
+import CreateRoom from "./room/create-room";
 
 function App() {
   return (
@@ -19,10 +20,11 @@ function App() {
           </header>
             <main>
                 <Routes>
-                        <Route path={"/"} element={<Login />}></Route>
-                        <Route path={"/room/:id"} element={<PokerPlanning />}></Route>
-                        <Route path={"*"} element={<NotFoundPage />}></Route>
-                    </Routes>
+                    <Route path={"/"} element={<CreateRoom />} />
+                    <Route path={"/login"} element={<Login />} />
+                    <Route path={"/room/:id"} element={<PokerPlanning />} />
+                    <Route path={"*"} element={<NotFoundPage />} />
+                </Routes>
             </main>
             <footer className={"w-full bg-primary text-white p-4 mt-8 static bottom-0"}>
                 <p>Developped By Clément</p>
