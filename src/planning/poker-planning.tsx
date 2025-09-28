@@ -4,8 +4,9 @@ import {useMutation, useQuery} from "convex/react";
 import {api} from "../convex/_generated/api";
 import {useParams} from "react-router-dom";
 import {Id} from "../convex/_generated/dataModel";
-import {getUserFromLocalStorage} from "../user/user";
+import {getUserFromLocalStorage, User} from "../user/user";
 import Result, {Player} from "./result";
+import {Vote} from "./vote";
 
 const values = ["☕", "1", "2", "3", "5", "8", "13", "?"];
 
@@ -14,19 +15,11 @@ interface RoomDto {
     votes: Vote[];
 }
 
-interface Vote {
-    _id: Id<"votes">;
-    roomId: Id<"rooms">;
-    userId: Id<"users">;
-    value: string;
-    _creationTime?: number;
-}
-
 export default function PokerPlanning() {
     const [selected, setSelected] = useState<string | null>(null);
     const params = useParams();
     const roomId = params.id as Id<"rooms">;
-    const userId = getUserFromLocalStorage()?._id as Id<"users">;
+    const user: User | null = getUserFromLocalStorage();
     const room: RoomDto | undefined = useQuery(api.functions.rooms.getVotesForRoom, {roomId});
     const revealVotesFromRoom = useMutation(api.functions.rooms.setRevealVotes);
     const updateVote = useMutation(api.functions.votes.addOrUpdateVote);
@@ -34,8 +27,14 @@ export default function PokerPlanning() {
 
     const selectCard = async (selectedValue: string): Promise<void> => {
         if (room?.revealed) return;
+        const userId = user?._id as Id<"users">;
+        const userName = user?.name;
+
+        if (!userId) throw new Error("User ID is required to vote");
+        if (!userName) throw new Error("User name is required to vote");
+
         setSelected(selectedValue);
-        await updateVote({roomId, userId, value: selectedValue});
+        await updateVote({roomId, userId,  userName, value: selectedValue});
     }
 
     const reveal = async (): Promise<void> => {
@@ -57,7 +56,7 @@ export default function PokerPlanning() {
 
     const mapPlayers = (): Player[] => {
         return room?.votes.map((vote: Vote) => ({
-            name: vote.userId.toString(), // Replace with actual user name when available
+            name: vote.userName ?? vote.userId.toString(),
             card: vote.value
         })) || [];
     }

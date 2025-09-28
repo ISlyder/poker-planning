@@ -5,6 +5,7 @@ export default defineSchema({
     votes: defineTable({
         roomId: v.id("rooms"),
         userId: v.id("users"),
+        userName: v.string(),
         value: v.string(),
     })
         .index("by_room", ["roomId"])
