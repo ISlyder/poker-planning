@@ -35,7 +35,7 @@ export default function Login() {
     }
 
     return (
-        <div className={"flex flex-col items-center h-screen gap-4"}>
+        <div className={"flex flex-col items-center mb-auto gap-4"}>
             <h1 className={"text-4xl mt-4"}>Rejoindre une room</h1>
             <form className={"flex flex-col gap-4"}
                   onSubmit={submitForm}
