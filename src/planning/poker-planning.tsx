@@ -5,7 +5,7 @@ import {api} from "../convex/_generated/api";
 import {useParams} from "react-router-dom";
 import {Id} from "../convex/_generated/dataModel";
 import {getUserFromLocalStorage} from "../user/user";
-import {noop} from "../utils/utils";
+import Result, {Player} from "./result";
 
 const values = ["☕", "1", "2", "3", "5", "8", "13", "?"];
 
@@ -32,9 +32,10 @@ export default function PokerPlanning() {
     const updateVote = useMutation(api.functions.votes.addOrUpdateVote);
     const resetVotes = useMutation(api.functions.votes.resetVotes);
 
-    const selectCard = (selectedValue: string): void => {
+    const selectCard = async (selectedValue: string): Promise<void> => {
         if (room?.revealed) return;
         setSelected(selectedValue);
+        await updateVote({roomId, userId, value: selectedValue});
     }
 
     const reveal = async (): Promise<void> => {
@@ -54,54 +55,36 @@ export default function PokerPlanning() {
         await resetVotes({roomId});
     }
 
-    const userVote = async (): Promise<void> => {
-        if (!room || room.revealed || !selected) return;
-        if (!userId) throw new Error("User not found");
-        await updateVote({roomId, userId, value: selected});
+    const mapPlayers = (): Player[] => {
+        return room?.votes.map((vote: Vote) => ({
+            name: vote.userId.toString(), // Replace with actual user name when available
+            card: vote.value
+        })) || [];
     }
 
     return (
-        <>
-            <div className="flex gap-4 justify-center mt-8">
-                <button
-                    onClick={reveal}
-                    className="px-6 py-3 rounded-xl bg-primary hover:bg-secondary text-white"
-                >
-                    Révéler
-                </button>
-                <button
-                    onClick={reinitRoom}
-                    className="px-6 py-3 rounded-xl bg-primary hover:bg-secondary text-white"
-                >
-                    Réinitialiser
-                </button>
-            </div>
+        <div className={"flex flex-col items-center justify-between gap-20 p-4"}>
+            <h1 className="text-4xl text-center">Place aux votes</h1>
 
-            <div className={"flex flex-wrap gap-4 justify-center mt-8"}>
-                {values.map((value) => (
-                    <VoteCard key={value} value={value} isSelected={selected === value} onSelect={selectCard}/>))
-                }
-            </div>
+                <Result players={mapPlayers()}
+                        isRevealed={room?.revealed ?? false}
+                        reinitRoom={reinitRoom}
+                        reveal={reveal}
+                />
 
-            <button className={"px-6 py-3 rounded-xl bg-primary hover:bg-secondary text-white"}
-                    onClick={userVote}
-            >Voter</button>
-
-            {room?.revealed && (
-                <div className="mt-8 text-xl text-center">
-                    Résultats
+            <div className={"flex flex-col items-center"}>
+                <div className={"text-center"}>Choisis une carte :</div>
+                <div className={"flex flex-wrap gap-4 justify-center mt-8"}>
+                    {values.map((value) => (
+                        <VoteCard key={value}
+                                  value={value}
+                                  isSelected={selected === value}
+                                  onSelect={selectCard}
+                        />))
+                    }
                 </div>
-            )}
-            {room?.revealed && (room?.votes?.length ? (
-                    room?.votes.map((vote: Vote) => (
-                        <VoteCard value={vote.value}
-                                  isSelected={false}
-                                  onSelect={noop}
-                                  key={vote._id}
-                        />
-                    ))) : (<div className="mt-4 text-center">Aucun vote</div>)
-            )
-            }
-        </>
+            </div>
+
+        </div>
     );
 }

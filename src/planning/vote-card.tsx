@@ -11,7 +11,7 @@ export default function VoteCard(props: VoteCardProps) {
 
     return (
         <>
-            <button className={`rounded-lg text-white h-36 w-36 ${props.isSelected ? "bg-secondary" : "bg-primary"}`}
+            <button className={`rounded-lg text-white h-12 w-12 ${props.isSelected ? "bg-secondary" : "bg-primary"}`}
                     key={props.value}
                     onClick={onClick}>
                 {props.value}

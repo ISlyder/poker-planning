@@ -15,7 +15,7 @@ export default function CreateRoom() {
         }
         e.preventDefault();
         const roomId: string = await createRoom({roomName});
-        navigate(`/login?room=${roomId}`);
+        navigate(`/room/${roomId}/login`);
     }
 
     const onRoomNameChange = (e: React.ChangeEvent<HTMLInputElement>): void => {

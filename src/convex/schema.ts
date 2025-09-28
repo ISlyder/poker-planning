@@ -7,7 +7,8 @@ export default defineSchema({
         userId: v.id("users"),
         value: v.string(),
     })
-        .index("by_room", ["roomId"]),
+        .index("by_room", ["roomId"])
+        .index("by_room_user", ["roomId", "userId"]),
 
     rooms: defineTable({
         name: v.string(),
