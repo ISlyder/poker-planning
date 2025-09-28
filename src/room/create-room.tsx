@@ -23,7 +23,7 @@ export default function CreateRoom() {
     }
 
     return (
-        <div className={"flex flex-col items-center h-screen gap-4"}>
+        <div className={"flex flex-col items-center gap-4 mb-auto"}>
             <h1 className={"text-4xl mt-4"}>Créer une room</h1>
             <form className={"flex flex-col gap-4"} onSubmit={submitForm}>
                 <div className={"flex gap-2 justify-center items-center"}>
