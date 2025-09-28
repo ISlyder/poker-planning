@@ -5,3 +5,11 @@
 #root {
   @apply flex flex-col min-h-screen justify-between;
 }
+
+button {
+  @apply bg-primary text-white p-2 rounded hover:bg-gray-400;
+}
+
+.button-secondary {
+  @apply bg-white text-primary p-2 rounded hover:bg-gray-400;
+}

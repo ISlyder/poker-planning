@@ -47,7 +47,7 @@ export default function Login() {
                            value={name}
                            className={"border border-primary-300 p-2 rounded"}
                            onChange={handleNameChange}/>
-                    <button type={"submit"} className={"bg-primary text-white p-2 rounded"}>Rejoindre</button>
+                    <button type={"submit"}>Rejoindre</button>
                 </div>
             </form>
         </div>

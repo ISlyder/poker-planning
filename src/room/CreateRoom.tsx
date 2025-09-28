@@ -34,7 +34,7 @@ export default function CreateRoom() {
                            value={roomName}
                            onChange={onRoomNameChange}
                     />
-                      <button type={"submit"} className={"bg-primary text-white p-2 rounded"}>Créer</button>
+                      <button type={"submit"}>Créer</button>
                  </div>
                 </form>
           </div>

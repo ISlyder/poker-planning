@@ -1,22 +1,16 @@
 import React from 'react';
 import './App.css';
-import PokerPlanning from "./planning/poker-planning";
-import logo from './assets/main-logo.png';
+import PokerPlanning from "./planning/PokerPlanning";
 import NotFoundPage from "./ui/NotFoundPage";
-import Login from "./user/login";
-import {Link} from "react-router";
+import Login from "./user/Login";
 import {BrowserRouter, Route, Routes} from "react-router-dom";
-import CreateRoom from "./room/create-room";
+import CreateRoom from "./room/CreateRoom";
+import Header from "./ui/Header";
 
 function App() {
   return (
       <BrowserRouter>
-          <header className="bg-primary text-white p-4 flex gap-1">
-              <Link to={"/"} className={"flex items-center gap-4"}>
-                  <img src={logo} className={"h-10 w-10"} alt={"Logo"}/>
-                  <h1 className="text-2xl font-bold">Poker planning Infra&IOT Team</h1>
-              </Link>
-          </header>
+          <Header />
             <>
                 <Routes>
                     <Route path={"/"} element={<CreateRoom />} />

@@ -1,11 +1,11 @@
 import {useState} from "react";
-import VoteCard from "./vote-card";
+import VoteCard from "./VoteCard";
 import {useMutation, useQuery} from "convex/react";
 import {api} from "../convex/_generated/api";
 import {useParams} from "react-router-dom";
 import {Id} from "../convex/_generated/dataModel";
 import {getUserFromLocalStorage, User} from "../user/user";
-import Result, {Player} from "./result";
+import Result, {Player} from "./Result";
 import {Vote} from "./vote";
 
 const values = ["☕", "1", "2", "3", "5", "8", "13", "?"];
@@ -20,6 +20,7 @@ export default function PokerPlanning() {
     const params = useParams();
     const roomId = params.id as Id<"rooms">;
     const user: User | null = getUserFromLocalStorage();
+
     const room: RoomDto | undefined = useQuery(api.functions.rooms.getVotesForRoom, {roomId});
     const revealVotesFromRoom = useMutation(api.functions.rooms.setRevealVotes);
     const updateVote = useMutation(api.functions.votes.addOrUpdateVote);
@@ -64,7 +65,6 @@ export default function PokerPlanning() {
     return (
         <div className={"flex flex-col items-center justify-between gap-20 p-4"}>
             <h1 className="text-4xl text-center">Place aux votes</h1>
-
                 <Result players={mapPlayers()}
                         isRevealed={room?.revealed ?? false}
                         reinitRoom={reinitRoom}
