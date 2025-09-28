@@ -13,6 +13,7 @@ export default defineSchema({
 
     rooms: defineTable({
         name: v.string(),
+        eligibleValues: v.array(v.string()),
         revealedVotes: v.boolean(),
     }),
 

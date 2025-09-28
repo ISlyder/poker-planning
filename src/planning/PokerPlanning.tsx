@@ -7,13 +7,7 @@ import {Id} from "../convex/_generated/dataModel";
 import {getUserFromLocalStorage, User} from "../user/user";
 import Result, {Player} from "./Result";
 import {Vote} from "./vote";
-
-const values = ["☕", "1", "2", "3", "5", "8", "13", "?"];
-
-interface RoomDto {
-    revealed: boolean;
-    votes: Vote[];
-}
+import {RoomResponse} from "../room/room";
 
 export default function PokerPlanning() {
     const [selected, setSelected] = useState<string | null>(null);
@@ -21,7 +15,7 @@ export default function PokerPlanning() {
     const roomId = params.id as Id<"rooms">;
     const user: User | null = getUserFromLocalStorage();
 
-    const room: RoomDto | undefined = useQuery(api.functions.rooms.getVotesForRoom, {roomId});
+    const room: RoomResponse | undefined = useQuery(api.functions.rooms.getRoom, {roomId});
     const revealVotesFromRoom = useMutation(api.functions.rooms.setRevealVotes);
     const updateVote = useMutation(api.functions.votes.addOrUpdateVote);
     const resetVotes = useMutation(api.functions.votes.resetVotes);
@@ -74,7 +68,7 @@ export default function PokerPlanning() {
             <div className={"flex flex-col items-center"}>
                 <div className={"text-center"}>Choisis une carte :</div>
                 <div className={"flex flex-wrap gap-4 justify-center mt-8"}>
-                    {values.map((value) => (
+                    {room?.eligibleValues.map((value) => (
                         <VoteCard key={value}
                                   value={value}
                                   isSelected={selected === value}
