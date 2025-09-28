@@ -1,5 +1,5 @@
-import React, {FormEvent, useEffect, useState} from "react";
-import {useNavigate, useSearchParams} from "react-router-dom";
+import React, {FormEvent, useState} from "react";
+import {useNavigate, useParams} from "react-router-dom";
 import {useMutation} from "convex/react";
 import {api} from "../convex/_generated/api";
 import {getUserNameFromLocalStorage, User} from "./user";
@@ -7,23 +7,15 @@ import {Id} from "../convex/_generated/dataModel";
 
 export default function Login() {
     const [name, setName] = useState<string>(getUserNameFromLocalStorage() ?? "");
-    const [searchParams] = useSearchParams();
+    const params = useParams();
+    const roomId: string | undefined = params.id;
     const navigate = useNavigate();
     const createUser = useMutation(api.functions.users.createUser);
     const addUserToRoom = useMutation(api.functions.room_users.addUserToRoom);
 
-    useEffect(() => {
-        const room = searchParams.get("room");
-        if (!room) {
-            console.error("No room specified in URL. Redirecting to home.");
-            navigate("/");
-        }
-    }, [searchParams, navigate]);
-
     const submitForm = async (e: FormEvent<HTMLFormElement>) => {
         if (!name || !name.trim().length) return;
         e.preventDefault();
-        const roomId = searchParams.get("room");
         if (!roomId) {
             throw new Error("No room ID found in URL");
         }
@@ -46,7 +38,7 @@ export default function Login() {
         <div className={"flex flex-col items-center h-screen gap-4"}>
             <h1 className={"text-4xl mt-4"}>Rejoindre une room</h1>
             <form className={"flex flex-col gap-4"}
-                    onSubmit={submitForm}
+                  onSubmit={submitForm}
             >
                 <div className={"flex gap-2 justify-center items-center"}>
                     <label>Entrez votre nom</label>

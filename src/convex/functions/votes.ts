@@ -8,22 +8,26 @@ export const addOrUpdateVote = mutation({
         value: v.string(),
     },
     handler: async (ctx, args) => {
-        const existing = await ctx.db
+        const existingVotes = await ctx.db
             .query("votes")
-            .withIndex("by_room", (q) => q.eq("roomId", args.roomId))
-            .first();
-        // The query above should also filter by userId to ensure each user has only one vote per room.
+            .withIndex("by_room_user", q =>
+                q.eq("roomId", args.roomId).eq("userId", args.userId)
+            )
+            .collect();
 
-        if (existing) {
-            await ctx.db.patch(existing._id, { value: args.value });
-        } else {
-            await ctx.db.insert("votes", {
+        if (existingVotes.length > 0) {
+            const existingVote = existingVotes[0];
+            await ctx.db.patch(existingVote._id, {value: args.value});
+            return existingVote._id;
+        }
+        else {
+            return await ctx.db.insert("votes", {
                 roomId: args.roomId,
                 userId: args.userId,
                 value: args.value,
             });
         }
-    },
+    }
 });
 
 export const resetVotes = mutation({
